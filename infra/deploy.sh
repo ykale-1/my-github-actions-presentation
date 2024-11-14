@@ -4,19 +4,20 @@
 # Usage: ./deploy.sh <resource-group-name> <location> <app-name>
 
 # Check if the correct number of arguments are passed
-if [ "$#" -ne 7 ]; then
-    echo "Usage: $0 <resource-group-name> <location> <ad-app-name> <org> <repo> <branch> <webappname>"
+if [ "$#" -ne 8 ]; then
+    echo "Usage: $0 <subscriptionid> <resource-group-name> <location> <ad-app-name> <org> <repo> <branch> <webappname>"
     exit 1
 fi
 
 # Parameters
-resourceGroupName=$1
-location=$2
-adAppName=$3
-org=$4
-repo=$5
-branch=$6
-webAppName=$7
+subscriptionId=$1
+resourceGroupName=$2
+location=$3
+adAppName=$4
+org=$5
+repo=$6
+branch=$7
+webAppName=$8
 
 
 # Deploy the Bicep template to create the resource group
@@ -38,6 +39,16 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Create the service principal for the Azure AD App
+echo "Creating service principal for the Azure AD App..."
+az ad sp create --id $appId
+
+# Check if the service principal creation was successful
+if [ $? -ne 0 ]; then
+    echo "Failed to create service principal."
+    exit 1
+fi
+
 # Create a new federated credential for GitHub Actions
 echo "Creating federated credential..."
 az ad app federated-credential create --id $appId --parameters '{
@@ -53,4 +64,14 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Deployment, Azure AD App registration, and federated credential creation completed successfully."
+# Assign Contributor role to the Azure AD App for the resource group
+echo "Assigning Contributor role to the Azure AD App for the resource group..."
+az role assignment create --assignee $appId --role Contributor --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroupName
+
+# Check if the role assignment was successful
+if [ $? -ne 0 ]; then
+    echo "Failed to assign Contributor role."
+    exit 1
+fi
+
+echo "Deployment, Azure AD App registration, federated credential creation, and role assignment completed successfully."

@@ -16,30 +16,39 @@ appName=$3
 
 # Delete the resource group
 echo "Deleting resource group..."
-for i in {1..5}; do
+for i in {1..3}; do
   az group delete --name $resourceGroupName --subscription $subscriptionId --yes --no-wait
   if [ $? -eq 0 ]; then
     echo "Resource group deletion initiated successfully."
     break
   else
-    echo "Failed to initiate resource group deletion. Retrying in 10 seconds..."
-    sleep 10
+    echo "Failed to initiate resource group deletion. Retrying in 5 seconds..."
+    sleep 5
   fi
 done
 
-
-
-
 # Get the Object ID of the Azure AD App registration
-id=$(az ad app list --display-name $appName --query "[0].id" --output tsv)
+appId=$(az ad app list --display-name $appName --query "[0].id" --output tsv)
 
 # Check if the app registration exists
-if [ -z "$id" ]; then
+if [ -z "$appId" ]; then
     echo "Azure AD App registration not found."
 else
     # Delete the Azure AD App registration
     echo "Deleting Azure AD App registration..."
-    az ad app delete --id $id
+    az ad app delete --id $appId
+
+    # Get the Object ID of the service principal
+    spId=$(az ad sp list --filter "appId eq '$appId'" --query "[0].objectId" --output tsv)
+
+    # Check if the service principal exists
+    if [ -z "$spId" ]; then
+        echo "Service principal not found. This may be ok."
+    else
+        # Delete the service principal
+        echo "Deleting service principal..."
+        az ad sp delete --id $spId
+    fi
 fi
 
 echo "Deletion process completed."
