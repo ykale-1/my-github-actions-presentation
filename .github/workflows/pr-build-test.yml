@@ -1,0 +1,37 @@
+name: Build and Deploy
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Publish
+        run: dotnet publish -c Release -o ./publish
+
+      - name: Create zip file
+        run: zip -r myapp.zip ./publish
+
+      - name: Upload zip file
+        uses: actions/upload-artifact@v2
+        with:
+          name: myapp
+          path: myapp.zip
