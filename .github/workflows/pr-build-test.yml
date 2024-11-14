@@ -1,9 +1,10 @@
-name: Build and Deploy
+name: PR - Build / Test
 
 on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -11,12 +12,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v4.1.0
         with:
-          dotnet-version: "6.0.x"
+          dotnet-version: "8.0.x"
 
       - name: Restore dependencies
         run: dotnet restore
@@ -31,7 +32,7 @@ jobs:
         run: zip -r myapp.zip ./publish
 
       - name: Upload zip file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: myapp
           path: myapp.zip
