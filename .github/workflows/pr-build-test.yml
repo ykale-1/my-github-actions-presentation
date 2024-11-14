@@ -21,18 +21,22 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
+        working-directory: ./src/my-web-app
 
       - name: Build
         run: dotnet build --no-restore --configuration Release
+        working-directory: ./src/my-web-app
 
       - name: Publish
         run: dotnet publish -c Release -o ./publish
+        working-directory: ./src/my-web-app
 
       - name: Create zip file
         run: zip -r myapp.zip ./publish
+        working-directory: ./src/my-web-app
 
       - name: Upload zip file
         uses: actions/upload-artifact@v4
         with:
           name: myapp
-          path: myapp.zip
+          path: ./src/my-web-app/myapp.zip
