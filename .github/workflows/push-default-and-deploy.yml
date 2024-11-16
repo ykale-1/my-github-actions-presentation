@@ -34,15 +34,14 @@ jobs:
       - name: Publish
         run: dotnet publish "${{github.workspace}}/src/my-web-app/my-web-app.csproj" -c Release -o mywebapp
 
-      #- name: Create zip file
-      #  run: zip -r myapp.zip ./publish
-      #  working-directory: ./src/my-web-app
+      - name: Create zip file
+        run: zip -r myapp.zip mywebapp/**
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: myapp
-          path: mywebapp/**
+          path: myapp.zip
           if-no-files-found: error
 
   deploy-to-dev:
