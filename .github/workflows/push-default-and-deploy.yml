@@ -24,12 +24,10 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Restore dependencies
-        run: dotnet restore
-        working-directory: ./src/my-web-app
+        run: dotnet restore "${{github.workspace}}/src/my-web-app/my-web-app.csproj"
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
-        working-directory: ./src/my-web-app
+        run: dotnet build "${{github.workspace}}/src/my-web-app/my-web-app.csproj"  --no-restore --configuration Release
 
       - name: Publish
         run: dotnet publish "${{github.workspace}}/src/my-web-app/my-web-app.csproj" -c Release -o mywebapp
@@ -55,11 +53,6 @@ jobs:
           name: myapp
           path: myapp
 
-      - name: testing
-        run: |
-          ls -la
-          ls -la myapp
-
       - name: Login to Azure
         uses: azure/login@v2.2.0
         with:
@@ -72,4 +65,55 @@ jobs:
         with:
           app-name: ${{ vars.WEB_APP_NAME }}
           slot-name: dev
+          package: myapp
+  deploy-to-staging:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: myapp
+          path: myapp
+
+      - name: Login to Azure
+        uses: azure/login@v2.2.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.WEB_APP_NAME }}
+          slot-name: staging
+          package: myapp
+
+  deploy-to-prod:
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-to-dev
+      - deploy-to-staging
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: myapp
+          path: myapp
+
+      - name: Login to Azure
+        uses: azure/login@v2.2.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.WEB_APP_NAME }}
+          slot-name: prod
           package: myapp
