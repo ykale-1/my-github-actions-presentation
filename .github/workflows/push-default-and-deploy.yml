@@ -32,14 +32,18 @@ jobs:
       - name: Publish
         run: dotnet publish "${{github.workspace}}/src/my-web-app/my-web-app.csproj" -c Release -o mywebapp
 
-      - name: Create zip file
-        run: zip -r myapp.zip mywebapp/**
+      #- name: Create zip file
+      #  run: |
+      #    ls -la
+      #    ls -la mywebapp
+      #    zip -r myapp.zip mywebapp/**
+      #    ls -la
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: myapp
-          path: myapp.zip
+          path: mywebapp/**
           if-no-files-found: error
 
   deploy-to-dev:
@@ -55,6 +59,11 @@ jobs:
         with:
           name: myapp
           path: myapp
+
+      - name: testing
+        run: |
+          ls -la
+          ls -la myapp
 
       - name: Login to Azure
         uses: azure/login@v2.2.0
