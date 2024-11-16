@@ -26,12 +26,15 @@ runs:
 
     - name: Restore dependencies
       run: dotnet restore "${{ inputs.project-path }}"
+      shell: bash
 
     - name: Build
       run: dotnet build "${{ inputs.project-path }}" --no-restore --configuration Release
+      shell: bash
 
     - name: Publish
       run: dotnet publish "${{ inputs.project-path }}" -c Release -o ${{ inputs.output-path }}
+      shell: bash
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
