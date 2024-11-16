@@ -66,6 +66,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ secrets.WEB_APP_NAME }}
+          app-name: ${{ vars.WEB_APP_NAME }}
           slot-name: dev
           package: ./src/my-web-app/myapp.zip
