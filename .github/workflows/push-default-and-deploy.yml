@@ -45,6 +45,9 @@ jobs:
   deploy-to-dev:
     runs-on: ubuntu-latest
     needs: build-and-test
+    environment:
+      name: DEV
+      url: http://my-web-app-please-work-dev.azurewebsites.net/
 
     steps:
       - name: Download artifact
@@ -66,9 +69,13 @@ jobs:
           app-name: ${{ vars.WEB_APP_NAME }}
           slot-name: dev
           package: myapp
+
   deploy-to-staging:
     runs-on: ubuntu-latest
     needs: build-and-test
+    environment:
+      name: STAGING
+      url: http://my-web-app-please-work-staging.azurewebsites.net/
 
     steps:
       - name: Download artifact
@@ -96,6 +103,9 @@ jobs:
     needs:
       - deploy-to-dev
       - deploy-to-staging
+    environment:
+      name: PROD
+      url: http://my-web-app-please-work-prod.azurewebsites.net/
 
     steps:
       - name: Download artifact
