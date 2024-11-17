@@ -1,0 +1,122 @@
+name: Push Default and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Before Composite action
+        run: |
+          echo "Hello from before composite action"
+
+      - name: Build and Publish .NET Core App
+        uses: devopselvis/github-actions-presentation-2025/.github/actions/build-and-publish@main
+        with:
+          dotnet-version: "8.0.x"
+          project-path: "${{ github.workspace }}/src/my-web-app/my-web-app.csproj"
+          output-path: "mywebapp"
+
+      - name: After Composite action
+        run: |
+          echo "Hello from after composite action"
+
+  deploy-to-dev:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    environment:
+      name: DEV
+      url: http://my-web-app-please-work-dev.azurewebsites.net/
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: myapp
+          path: myapp
+
+      - name: testing
+        run: |
+          ls -la
+          ls -la myapp
+
+      - name: Login to Azure
+        uses: azure/login@v2.2.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.WEB_APP_NAME }}
+          slot-name: dev
+          package: myapp
+
+  deploy-to-staging:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    environment:
+      name: STAGING
+      url: http://my-web-app-please-work-staging.azurewebsites.net/
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: myapp
+          path: myapp
+
+      - name: Login to Azure
+        uses: azure/login@v2.2.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.WEB_APP_NAME }}
+          slot-name: staging
+          package: myapp
+
+  deploy-to-prod:
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-to-dev
+      - deploy-to-staging
+    environment:
+      name: PROD
+      url: http://my-web-app-please-work-prod.azurewebsites.net/
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: myapp
+          path: myapp
+
+      - name: Login to Azure
+        uses: azure/login@v2.2.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.WEB_APP_NAME }}
+          slot-name: prod
+          package: myapp
