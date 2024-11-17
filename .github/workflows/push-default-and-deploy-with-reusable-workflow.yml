@@ -1,4 +1,4 @@
-name: Push Default and Deploy
+name: Push Default and Deploy - Reusable Workflow
 
 on:
   push:
