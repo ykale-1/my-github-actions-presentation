@@ -40,3 +40,27 @@ jobs:
       web-app-name: ${{ vars.WEB_APP_NAME }}
       slot-name: "dev"
     secrets: inherit
+
+  deploy-to-staging:
+    needs: build-and-test
+    uses: devopselvis/github-actions-presentation-2025/.github/workflows/deploy-to-environment-reusable.yml@main
+    with:
+      environment-name: "STAGING"
+      environment-url: "http://my-web-app-please-work-staging.azurewebsites.net/"
+      artifact-name: "myapp"
+      web-app-name: ${{ vars.WEB_APP_NAME }}
+      slot-name: "staging"
+    secrets: inherit
+
+  deploy-to-prod:
+    needs:
+      - deploy-to-staging
+      - deploy-to-dev
+    uses: devopselvis/github-actions-presentation-2025/.github/workflows/deploy-to-environment-reusable.yml@main
+    with:
+      environment-name: "PROD"
+      environment-url: "http://my-web-app-please-work-prod.azurewebsites.net/"
+      artifact-name: "myapp"
+      web-app-name: ${{ vars.WEB_APP_NAME }}
+      slot-name: "prod"
+    secrets: inherit
