@@ -119,4 +119,14 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Add the appId to a repository-level secret called AZURE_CLIENT_ID
+echo "Adding AZURE_CLIENT_ID secret to the repository"
+gh secret set AZURE_CLIENT_ID --body "$appId" --repo "$org/$repo"
+
+# Check if setting the secret was successful
+if [ $? -ne 0 ]; then
+    echo "Failed to set AZURE_CLIENT_ID secret."
+    exit 1
+fi
+
 echo "Deployment, Azure AD App registration, federated credential creation, and role assignment completed successfully."
