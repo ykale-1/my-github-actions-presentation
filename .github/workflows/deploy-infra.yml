@@ -30,3 +30,5 @@ jobs:
             ${{ vars.REPO }} \
             ${{ vars.BRANCH }} \
             ${{ vars.WEB_APP_NAME}}
+        env:
+          GH_TOKEN: ${{ github.token }}
