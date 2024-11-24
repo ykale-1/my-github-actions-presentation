@@ -49,12 +49,57 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Create a new federated credential for GitHub Actions
-echo "Creating federated credential..."
+# Create a new federated credential for GitHub Actions for deploying directly to main branch
+echo "Creating federated credential for main branch deployment"
 az ad app federated-credential create --id $appId --parameters '{
   "name": "github-actions-presentation-2025-cred1",
   "issuer": "https://token.actions.githubusercontent.com",
   "subject": "repo:'$org'/'$repo':ref:refs/heads/'$branch'",
+  "audiences": ["api://AzureADTokenExchange"]
+}'
+
+# Check if the federated credential creation was successful
+if [ $? -ne 0 ]; then
+    echo "Failed to create federated credential."
+    exit 1
+fi
+
+# Create a new federated credential for GitHub Actions for targeting DEV Environment
+echo "Creating federated credential for targeting DEV environment"
+az ad app federated-credential create --id $appId --parameters '{
+  "name": "github-actions-presentation-2025-dev",
+  "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:'$org'/'$repo':environment:DEV",
+  "audiences": ["api://AzureADTokenExchange"]
+}'
+
+# Check if the federated credential creation was successful
+if [ $? -ne 0 ]; then
+    echo "Failed to create federated credential."
+    exit 1
+fi
+
+# Create a new federated credential for GitHub Actions for targeting STAGING Environment
+echo "Creating federated credential for targeting STAGING environment"
+az ad app federated-credential create --id $appId --parameters '{
+  "name": "github-actions-presentation-2025-staging",
+  "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:'$org'/'$repo':environment:STAGING",
+  "audiences": ["api://AzureADTokenExchange"]
+}'
+
+# Check if the federated credential creation was successful
+if [ $? -ne 0 ]; then
+    echo "Failed to create federated credential."
+    exit 1
+fi
+
+# Create a new federated credential for GitHub Actions for targeting PROD Environment
+echo "Creating federated credential for targeting PROD environment"
+az ad app federated-credential create --id $appId --parameters '{
+  "name": "github-actions-presentation-2025-prod",
+  "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:'$org'/'$repo':environment:PROD",
   "audiences": ["api://AzureADTokenExchange"]
 }'
 
