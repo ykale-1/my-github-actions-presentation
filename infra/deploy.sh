@@ -121,7 +121,8 @@ fi
 
 # Add the appId to a repository-level secret called AZURE_CLIENT_ID
 echo "Adding AZURE_CLIENT_ID secret to the repository"
-gh secret set AZURE_CLIENT_ID --body "$appId"
+gh auth login --with-token <<< "$GH_TOKEN"
+gh secret set AZURE_CLIENT_ID --body "$appId" --repo "$org/$repo"
 
 # Check if setting the secret was successful
 if [ $? -ne 0 ]; then
