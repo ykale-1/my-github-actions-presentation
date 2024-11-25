@@ -129,4 +129,27 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Add code that uses gh to see if the DEV, STAGING, and PROD environments exist. If they do not exist, create them
+# Function to check if an environment exists and create it if it does not
+create_environment_if_not_exists() {
+    local env_name=$1
+    echo "Checking if environment $env_name exists..."
+    if ! gh api repos/$org/$repo/environments/$env_name --silent; then
+        echo "Environment $env_name does not exist. Creating it..."
+        gh api repos/$org/$repo/environments/$env_name --method PUT --silent
+        if [ $? -ne 0 ]; then
+            echo "Failed to create environment $env_name."
+            exit 1
+        fi
+    else
+        echo "Environment $env_name already exists."
+    fi
+}
+
+# Check and create environments if they do not exist
+create_environment_if_not_exists "DEV"
+create_environment_if_not_exists "STAGING"
+create_environment_if_not_exists "PROD"
+
+
 echo "Deployment, Azure AD App registration, federated credential creation, and role assignment completed successfully."
