@@ -3,11 +3,6 @@ name: Deploy Infrastructure
 on:
   workflow_dispatch:
 
-permissions:
-  contents: read
-  id-token: write
-  actions: write
-
 jobs:
   deploy-infrastructure:
     name: Deploy Infrastructure to Azure
@@ -36,4 +31,4 @@ jobs:
             ${{ vars.BRANCH }} \
             ${{ vars.WEB_APP_NAME}}
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
