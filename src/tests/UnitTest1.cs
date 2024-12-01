@@ -22,19 +22,19 @@ namespace MyGithubActionsPresentation.Tests
     {
       Assert.IsTrue(true);
     }
-    /*
-        [TestMethod]
-        public void Test4Fails()
-        {
-          Assert.IsTrue(false);
-        }
 
-        [TestMethod]
-        public void Test5Fails()
-        {
-          Assert.IsTrue(false);
-        }
-    */
+    [TestMethod]
+    public void Test4Fails()
+    {
+      Assert.IsTrue(false);
+    }
+
+    [TestMethod]
+    public void Test5Fails()
+    {
+      Assert.IsTrue(false);
+    }
+
     [TestMethod]
     public void Test6Passes()
     {
