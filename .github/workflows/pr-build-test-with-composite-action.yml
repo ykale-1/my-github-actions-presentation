@@ -16,7 +16,7 @@ jobs:
           echo "Hello from before composite action"
 
       - name: Build and Publish .NET Core App
-        uses: devopselvis/my-github-actions-presentation/.github/actions/build-and-publish@main
+        uses: devopselvis/build-test-net-core-app-custom-action@main
         with:
           dotnet-version: "8.0.x"
           project-path: "${{ github.workspace }}/src/my-web-app/my-web-app.csproj"
