@@ -2,7 +2,7 @@ name: Repository Dispatch Example
 
 on:
   repository_dispatch:
-    types: [test_result]
+    types: [on-demand-test-event]
 
 jobs:
   
@@ -20,5 +20,6 @@ jobs:
         
       - name: Send greeting
         run: |
-          echo "passed: ${{github.event.client_payload.passed}}" 
-          echo "message: ${{github.event.client_payload.message}}" 
+          echo "value1: ${{github.event.client_payload.value1}}" 
+          echo "value2: ${{github.event.client_payload.value2}}" 
+          echo "value3: ${{github.event.client_payload.value3}}" 
