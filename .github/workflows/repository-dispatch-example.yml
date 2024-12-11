@@ -1,0 +1,24 @@
+name: Repository Dispatch Example
+
+on:
+  repository_dispatch:
+    types: [test_result]
+
+jobs:
+  
+  get-info-from-event:
+
+    runs-on:
+      - ubuntu-latest
+
+    steps:
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+        
+      - name: Send greeting
+        run: |
+          echo "passed: ${{github.event.client_payload.passed}}" 
+          echo "message: ${{github.event.client_payload.message}}" 
