@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: push-default-and-deploy-with-rw-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-and-test:
