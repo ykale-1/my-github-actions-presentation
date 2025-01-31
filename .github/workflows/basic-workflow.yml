@@ -28,7 +28,7 @@ on:
           - Tupelo
       fav-color-blue:
         description: "Is your favorite color blue"
-        required: true
+        #required: true
         #type: boolean
         default: "red"
 
