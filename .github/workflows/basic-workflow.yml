@@ -29,7 +29,8 @@ on:
       fav-color-blue:
         description: "Is your favorite color blue"
         required: true
-        type: boolean
+        #type: boolean
+        default: "red"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
